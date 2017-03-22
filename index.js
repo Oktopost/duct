@@ -1,4 +1,4 @@
 "use strict";
 
 
-var Event = require('./src/event');
+var Event = require('./src/Event');

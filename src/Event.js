@@ -1,15 +1,13 @@
 "use strict";
 
 
-var is		= require('oktopost-plankton').is;
 var func	= require('oktopost-plankton').func;
 var array	= require('oktopost-plankton').array;
 
 
 /**
  * @param {string|undefined} name
- * @return {function(this:event)}
- * @constructor
+ * @return {Event}
  */
 function Event(name) {
 	
@@ -50,10 +48,11 @@ function Event(name) {
 		wrappedCallback = func.async(wrappedCallback); 
 		wrappedCallback.apply(null, callbackArgs);
 	}
-	
-	
+
+
 	/**
-	 * @typedef event
+	 * @name Event
+	 * @property {String} a
 	 */
 	function event() {
 		var callbackArgs = [].slice.apply(arguments);
@@ -95,7 +94,7 @@ function Event(name) {
 	};
 
 	/**
-	 * @param {function(err)} handler
+	 * @param {function(handler)} handler
 	 * @return {event}
 	 */
 	event.setErrorHandler = function setErrorHandler(handler) {
