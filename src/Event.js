@@ -4,9 +4,11 @@
 var func	= require('oktopost-plankton').func;
 var array	= require('oktopost-plankton').array;
 
+var classify = require('./Classy').classify;
+
 
 /**
- * @param {string|undefined} name
+ * @param {string=} name
  * @return {Event}
  */
 function Event(name) {
@@ -103,6 +105,7 @@ function Event(name) {
 	};
 	
 	
+	classify(event);
 	return event;
 }
 
