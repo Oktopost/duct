@@ -22,6 +22,4 @@ function classify(object, init) {
 }
 
 
-module.exports = {
-	classify: classify
-};
+module.exports = { classify: classify };

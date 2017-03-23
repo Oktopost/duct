@@ -18,3 +18,7 @@ test/all.browserify
 
 # Build directories
 /bin
+
+# Ignore built files
+/duct-min.js
+/duct.js

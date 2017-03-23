@@ -9,3 +9,7 @@ module.exports = {
 	Event:		Event,
 	Listener:	Listener
 };
+
+
+
+var a = OktopostJS.duct.Event();

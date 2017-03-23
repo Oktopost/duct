@@ -3,7 +3,6 @@
 
 var func	= require('oktopost-plankton').func;
 var array	= require('oktopost-plankton').array;
-var async	= require('oktopost-plankton/src/async');
 
 var classify = require('./Classy').classify;
 
@@ -55,16 +54,17 @@ function Event(name) {
 
 	/**
 	 * @name Event
+	 * @alias OktopostJS.duct.Event
 	 * @property {String} a
 	 */
 	function event() {
 		var callbackArgs = [].slice.apply(arguments);
 		
-		async.do(function() {
+		setTimeout(function() {
 			array.forEach(_callbacks, function (callback) {
 				_invokeCallback(callback, callbackArgs);
 			});
-		});
+		}, 0);
 	}
 	
 

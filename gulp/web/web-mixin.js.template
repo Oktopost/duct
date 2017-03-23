@@ -1,0 +1,9 @@
+(function() {
+	var module = {};
+	
+	(function(module) {
+		<%= contents %>
+	})(module);
+	
+	window.oktopostJS.mixin('duct', module.exports);
+})();

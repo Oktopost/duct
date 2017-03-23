@@ -6,6 +6,7 @@ var classify = require('./Classy').classify;
 
 /**
  * @param {Event} event
+ * @alias OktopostJS.duct.Listener
  * @constructor
  */
 function Listener(event) {
