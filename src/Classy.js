@@ -2,7 +2,6 @@
 
 
 var is	= require('oktopost-plankton').is;
-var obj	= require('oktopost-plankton').obj;
 
 
 /**
@@ -10,11 +9,13 @@ var obj	= require('oktopost-plankton').obj;
  * @param {function()=} init
  */
 function classify(object, init) {
-	obj.forEach.pair(object, function(name, item) {
-		if (name[0] !== '_' && is.function(item)) {
-			object[name] = item.bind(object);
+	for (var key in object) {
+		var item = object[key];
+		
+		if (is.function(item)) {
+			object[key] = item.bind(object);
 		}
-	});
+	}
 	
 	if (is(init)) {
 		init.call(object)

@@ -1,10 +1,11 @@
-if (typeof window.oktopostJS === 'undefined') { 
-	window.oktopostJS = {
-		mixin: function(lib, mixin) {
+window.duct = window.duct || {};
+if (typeof window.duct.mixin === 'undefined') { 
+	window.duct = {
+		mixin: function(mixin) {
 			for (var key in mixin) {
-				window.oktopostJS[lib][key] = mixin[key];
+				//noinspection JSUnfilteredForInLoop
+				window.duct[key] = mixin[key];
 			}
 		}
 	}; 
 }
-window.oktopostJS.duct = {};

@@ -5,27 +5,38 @@ var classify = require('./Classy').classify;
 
 
 /**
- * @param {Event} event
- * @alias OktopostJS.duct.Listener
+ * @template T
+ * 
  * @constructor
+ * @class {duct.Listener}
+ * 
+ * @param {Event<T>} event
+ * 
+ * @property {Event<T>} _event
  */
 function Listener(event) {
-	var _event = event;
-	
-	
-	this.add = function add(callback) {
-		_event.add(callback);
-		return this;
-	};
-	
-	this.rem = function rem(callback) {
-		_event.rem(callback);
-		return this;
-	};
-	
-	
+	this._event = event;
 	classify(this);
 }
+
+
+/**
+ * @param {T} callback
+ * @return {Listener<T>}
+ */
+Listener.prototype.add = function add(callback) {
+	this._event.add(callback);
+	return this;
+};
+
+/**
+ * @param {T} callback
+ * @return {Listener<T>}
+ */
+Listener.prototype.remove = function add(callback) {
+	this._event.remove(callback);
+	return this;
+};
 
 
 module.exports = Listener;

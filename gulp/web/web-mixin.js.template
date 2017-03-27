@@ -5,5 +5,5 @@
 		<%= contents %>
 	})(module);
 	
-	window.oktopostJS.mixin('duct', module.exports);
+	window.duct.mixin(module.exports);
 })();
