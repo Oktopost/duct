@@ -11,3 +11,8 @@ module.exports = {
 	Creator:	Creator,
 	Listener:	Listener
 };
+
+
+var b = duct.handlers.CachedEventHandler;
+var a = new b;
+a.subscribe();

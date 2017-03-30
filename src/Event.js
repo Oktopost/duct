@@ -1,5 +1,7 @@
-"use strict";
+'use strict';
 
+
+var EventDebug = require('./debug/EventDebug');
 
 var func	= require('oktopost-plankton').func;
 var array	= require('oktopost-plankton').array;
@@ -14,10 +16,15 @@ var array	= require('oktopost-plankton').array;
  * @property {Array<T>} _callbacks
  * @property {string} _name
  * @property {function(err)} _errorHandler
+ * 
+ * @param {string} name
+ * @param {EventDebug=} debug
  */
-function Event(name) {
+function Event(name, debug) {
 	this._callbacks	= [];
 	this._name		= name || '';
+	this._debug		= debug || Event.DEFAULT_DEBUG;
+	
 	
 	this._errorHandler = function(err) {
 		console.error('Error when executing event ' + this._name, err);
@@ -91,6 +98,8 @@ Event.prototype.count = function count() {
 Event.prototype.trigger = function() {
 	var callbackArgs = [].slice.apply(arguments);
 	var self = this;
+	
+	this._debug.onTrigger(this, callbackArgs);
 		
 	setTimeout(
 		function() {
@@ -99,6 +108,9 @@ Event.prototype.trigger = function() {
 			});
 		}, 0);
 };
+
+
+Event.DEFAULT_DEBUG = new EventDebug();
 
 
 module.exports = Event;
