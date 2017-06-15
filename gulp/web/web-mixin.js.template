@@ -1,9 +1,0 @@
-(function() {
-	var module = {};
-	
-	(function(module) {
-		<%= contents %>
-	})(module);
-	
-	window.duct.mixin(module.exports);
-})();

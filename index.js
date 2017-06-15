@@ -1,18 +1,2 @@
-"use strict";
-
-
-var Event		= require('./src/Event');
-var Creator		= require('./src/Creator');
-var Listener	= require('./src/Listener');
-
-
-module.exports = {
-	Event:		Event,
-	Creator:	Creator,
-	Listener:	Listener
-};
-
-
-var b = duct.handlers.CachedEventHandler;
-var a = new b;
-a.subscribe();
+var root = require('oktopost-namespace').dynamic(__dirname);
+module.exports = root.Duct;
