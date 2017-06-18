@@ -1,6 +1,6 @@
 {
   "name": "oktopost-duct",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Event manager",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,8 @@
     "mocha": "^3.2.0"
   },
   "dependencies": {
-    "oktopost-classy": "https://github.com/Oktopost/classy.git#900af20",
-    "oktopost-plankton": "https://github.com/Oktopost/plankton.git#c600915"
+    "oktopost-plankton": "^1.1.0",
+    "oktopost-classy": "^1.0.2",
+    "oktopost-namespace": "^2.0.0"
   }
 }

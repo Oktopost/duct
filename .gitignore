@@ -12,6 +12,5 @@
 
 # Local files
 npm-debug.log
-test.js
-test/all.browserify
+/test.js
 /.namespace.json
