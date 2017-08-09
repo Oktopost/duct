@@ -23,23 +23,25 @@ namespace('Duct', function (root)
 	
 	/**
 	 * @template T
-	 * @param {T} callback
+	 * @param {T|*} target
+	 * @param {T=} callback
 	 * @return {Listener<T>}
 	 */
-	Listener.prototype.add = function (callback)
+	Listener.prototype.add = function (target, callback)
 	{
-		this._event.add(callback);
+		this._event.add(target, callback);
 		return this;
 	};
 	
 	/**
 	 * @template T
-	 * @param {T} callback
+	 * @param {T|*} target
+	 * @param {T=} callback
 	 * @return {Listener<T>}
 	 */
-	Listener.prototype.remove = function (callback)
+	Listener.prototype.remove = function (target, callback)
 	{
-		this._event.remove(callback);
+		this._event.remove(target, callback);
 		return this;
 	};
 	

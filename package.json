@@ -1,6 +1,6 @@
 {
   "name": "oktopost-duct",
-  "version": "0.2.0",
+  "version": "1.0.1",
   "description": "Event manager",
   "main": "index.js",
   "scripts": {
