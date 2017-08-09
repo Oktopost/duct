@@ -27,8 +27,7 @@ namespace('Duct', function (root)
 			{
 				next(callbacks, args);
 			});
-		},
-		
+		}
 	};
 	
 	

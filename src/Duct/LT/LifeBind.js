@@ -4,8 +4,14 @@ namespace('Duct.LT', function (root)
 	var func		= root.Plankton.func;
 	var foreach		= root.Plankton.foreach;
 	var classify	= root.Classy.classify;
-	
-	
+
+
+	/**
+	 * @class {Duct.LT.LifeBind}
+	 * @alias {LifeBind}
+	 * 
+	 * @constructor
+	 */
 	function LifeBind()
 	{
 		this._original	= [];
@@ -16,14 +22,11 @@ namespace('Duct.LT', function (root)
 	}
 	
 	
-	LifeBind.prototype._invokeUnbind = function (callback, original, bound)
+	LifeBind.prototype._invokeUnbind = function (onDestroy, original, bound)
 	{
-		if (bound.__DUCT_ORIGINAL_CALLBACK__ !== original)
-			return;
-		
 		delete bound.__DUCT_ORIGINAL_CALLBACK__;
-		callback(original, bound);
-	};
+		onDestroy(original, bound);
+	};	
 	
 	LifeBind.prototype._invokeUnbinds = function (original, boundData)
 	{
@@ -37,16 +40,20 @@ namespace('Duct.LT', function (root)
 	LifeBind.prototype._createCallback = function (callback)
 	{
 		var self = this;
+		var selfUnbound = false;
 		
 		return function ()
 		{
 			if (!self._isAlive)
 				return;
+			else if (selfUnbound)
+				return;
 			
-			var result = callback.call(this, arguments);
+			var result = callback.apply(this, arguments);
 			
 			if (result === false)
 			{
+				selfUnbound = true;
 				self.unbind(callback);
 			}
 			else if (result === null)
@@ -56,32 +63,32 @@ namespace('Duct.LT', function (root)
 		};
 	};
 	
-	LifeBind.prototype._add = function (callback, original, bound)
+	LifeBind.prototype._add = function (onDestroy, callback, bound)
 	{
 		var index = this._original.indexOf(callback);
 		
 		if (index === -1)
 		{
-			this._original.push(original);
-			this._boundData.push([ [ callback, bound ] ]);
+			this._original.push(callback);
+			this._boundData.push([ [ onDestroy, bound ] ]);
 		}
 		else
 		{
-			this._boundData[index].push([ callback, bound ]);
+			this._boundData[index].push([ onDestroy, bound ]);
 		}
 	};
-	
-	
+
+
+	/**
+	 * @param {function} callback
+	 * @param {function(Function, Function)=} onDestroy
+	 */
 	LifeBind.prototype.bindToLife = function (callback, onDestroy)
 	{
-		if (!this._isAlive)
-		{
-			func.async.do(function () { onDestroy(callback); });
-			return;
-		}
+		onDestroy = onDestroy || function() {};
 		
 		var self = this;
-		var boundCallback = this._createCallback();
+		var boundCallback = this._createCallback(callback);
 		
 		boundCallback.__DUCT_ORIGINAL_CALLBACK__ = callback;
 		
@@ -96,6 +103,8 @@ namespace('Duct.LT', function (root)
 		{
 			this._add(onDestroy, callback, boundCallback);
 		}
+		
+		return boundCallback;
 	};
 	
 	LifeBind.prototype.unbind = function (callback)
@@ -111,7 +120,8 @@ namespace('Duct.LT', function (root)
 		
 		if (index === -1) return;
 		
-		boundData = this._boundData.splice(index, 1);
+		boundData = (this._boundData.splice(index, 1))[0];
+		
 		this._original.splice(index, 1);
 		this._invokeUnbinds(callback, boundData)
 	};
