@@ -4,9 +4,10 @@ namespace('Duct', function (root)
 	var classify	= root.Classy.classify;
 	var func		= root.Plankton.func;
 	
-	var Event		= root.Duct.Event; 
-	var Listener	= root.Duct.Listener;
-	var LifeBind	= root.Duct.LT.LifeBind;
+	var Event			= root.Duct.Event; 
+	var Listener		= root.Duct.Listener;
+	var DeadListener	= root.Duct.DeadListener;
+	var LifeBind		= root.Duct.LT.LifeBind;
 	
 	
 	function LifeTime(name)
@@ -26,16 +27,6 @@ namespace('Duct', function (root)
 		return new Event('Destroy ' + this._name + ' Event');
 	};
 	
-	LifeTime.prototype._createTmpEvent = function ()
-	{
-		var self = this;
-		var tmpEvent = this._createEvent();
-		
-		func.async.do(function () { tmpEvent.trigger(self); });
-		
-		return tmpEvent;
-	};
-	
 	LifeTime.prototype._invokeOnKill = function ()
 	{
 		var event = this._onKill;
@@ -46,7 +37,7 @@ namespace('Duct', function (root)
 	
 
 	/**
-	 * @param {function(LifeTime)} callback
+	 * @param {function(LifeTime)=} callback
 	 * @return {Duct.Listener}
 	 */
 	LifeTime.prototype.onKill = function (callback)
@@ -55,7 +46,7 @@ namespace('Duct', function (root)
 		
 		if (this.isDead())
 		{
-			listener = new Listener(this._createTmpEvent());
+			listener = new DeadListener([this]);
 		}
 		else	
 		{

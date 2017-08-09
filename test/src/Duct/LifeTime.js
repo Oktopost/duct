@@ -12,6 +12,7 @@ const Listener	= Duct.Listener;
 
 suite('LifeTime', () =>
 {
+	/*
 	suite('onKill', () =>
 	{
 		test('Listener returned', () =>
@@ -26,4 +27,5 @@ suite('LifeTime', () =>
 			assert.instanceOf(lt.onKill(() => {}), Listener);
 		});
 	});
+	*/
 });

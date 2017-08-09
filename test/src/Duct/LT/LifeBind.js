@@ -79,11 +79,11 @@ suite('LifeBind', () =>
 			
 			lb.bindToLife(() => {}, () => { isCalled = true; });
 			
-			return func.postponed(() => 
+			return (func.postponed(() => 
 				{
 					assert.equal(isCalled, true);
 				}, 
-				1)
+				1))();
 		});
 	});
 	
@@ -174,11 +174,11 @@ suite('LifeBind', () =>
 			lb.bindToLife(() => {}, () => { isCalled = true; });
 			lb.clear();
 			
-			return func.postponed(() => 
+			return (func.postponed(() => 
 				{
 					assert.equal(isCalled, true);
 				}, 
-				1)
+				1))();
 		});
 		
 		test('on destroy invoked for all callbacks', () =>
@@ -193,12 +193,12 @@ suite('LifeBind', () =>
 			
 			lb.clear();
 			
-			return func.postponed(() => 
+			return (func.postponed(() => 
 				{
 					assert.equal(isCalledA, true);
 					assert.equal(isCalledB, true);
 				}, 
-				1)
+				1))();
 		});
 		
 		test('object still alive', () =>
@@ -233,11 +233,11 @@ suite('LifeBind', () =>
 			lb.bindToLife(() => {}, () => { isCalled = true; });
 			lb.kill();
 			
-			return func.postponed(() => 
+			return (func.postponed(() => 
 				{
 					assert.equal(isCalled, true);
 				}, 
-				1)
+				1))();
 		});
 		
 		test('object not alive', () =>
@@ -345,7 +345,7 @@ suite('LifeBind', () =>
 			
 			callback();
 			
-			return func.postponed(() => assert.equal(calledCount, 1), 1);
+			return (func.postponed(() => assert.equal(calledCount, 1), 1))();
 		});
 		
 		test('Call unbind from destroy', () => 
