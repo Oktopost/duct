@@ -1,10 +1,13 @@
 namespace('Duct', function (root)
 {
-	var Trigger		= root.Duct.Trigger;
-	var EventDebug	= root.Duct.Debug.EventDebug;
+	var Trigger			= root.Duct.Trigger;
+	var EventDebug		= root.Duct.Debug.EventDebug;
+	var LifeBindFactory	= root.Duct.LT.LifeBindFactory;
 	
+	var is			= root.Plankton.is;
 	var func		= root.Plankton.func;
 	var foreach		= root.Plankton.foreach;
+	
 	var classify	= root.Classy.classify;
 	
 	
@@ -18,7 +21,7 @@ namespace('Duct', function (root)
 	 * @property {string} _name
 	 * @property {function(err)} _errorHandler
 	 * 
-	 * @param {string} name
+	 * @param {string=} name
 	 * @param {EventDebug=} debug
 	 */
 	function Event(name, debug)
@@ -66,6 +69,16 @@ namespace('Duct', function (root)
 		wrappedCallback.apply(null, callbackArgs);
 	};
 	
+	/**
+	 * @param {callback} original
+	 * @param {callback} bound
+	 * @private
+	 */
+	Event.prototype._onUnbindLT = function (original, bound)
+	{
+		this.remove(bound);
+	};
+	
 	
 	/**
 	 * @returns {string}
@@ -91,27 +104,45 @@ namespace('Duct', function (root)
 	
 	/**
 	 * @template T
-	 * @param {T} callback
+	 * @param {T|*} item
+	 * @param {T=undefined} callback
 	 * @return {Event}
 	 */
-	Event.prototype.add = function (callback)
+	Event.prototype.add = function (item, callback)
 	{
-		if (this._callbacks !== null)
-			this._callbacks.push(callback);
+		if (this._callbacks === null) return this;
+		
+		if (is.function(callback))
+		{
+			var lt = LifeBindFactory.instance().get(item);
+			var bound = lt.bindToLife(callback, this._onUnbindLT);
+			this._callbacks.push(bound);
+		}
+		else 
+		{
+			this._callbacks.push(item);
+		}
 		
 		return this;
 	};
 	
 	/**
 	 * @template T
-	 * @param {T} callback
+	 * @param {T|*} item
+	 * @param {T=undefined} callback
 	 * @return {Event}
 	 */
-	Event.prototype.remove = function (callback)
+	Event.prototype.remove = function (item, callback)
 	{
 		if (this._callbacks === null) return this;
 		
-		var index = this._callbacks.indexOf(callback);
+		if (is.function(callback))
+		{
+			LifeBindFactory.instance().get(item).unbind(callback);
+			return this;
+		}
+		
+		var index = this._callbacks.indexOf(item);
 		
 		if (index >= 0)
 		{

@@ -30,6 +30,10 @@ namespace('Duct.LT', function (root)
 		this._builders = this._builders.concat(array(builder));
 	};
 	
+	/**
+	 * @param {*} element
+	 * @return {LifeBind}
+	 */
 	LifeBindFactory.prototype.get = function (element)
 	{
 		if (element instanceof LifeBind)
