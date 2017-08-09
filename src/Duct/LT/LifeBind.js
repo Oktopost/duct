@@ -106,7 +106,10 @@ namespace('Duct.LT', function (root)
 		
 		return boundCallback;
 	};
-	
+
+	/**
+	 * @param {function} callback
+	 */
 	LifeBind.prototype.unbind = function (callback)
 	{
 		if (is.function(callback.__DUCT_ORIGINAL_CALLBACK__))
@@ -148,12 +151,18 @@ namespace('Duct.LT', function (root)
 		this._isAlive = false;
 		this.clear();
 	};
-	
+
+	/**
+	 * @return {boolean}
+	 */
 	LifeBind.prototype.isAlive = function ()
 	{
 		return this._isAlive;
 	};
-	
+
+	/**
+	 * @return {boolean}
+	 */
 	LifeBind.prototype.isDead = function ()
 	{
 		return !this._isAlive;
