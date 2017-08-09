@@ -9,7 +9,7 @@ const Event			= Duct.Event;
 const LifeTime		= Duct.LifeTime;
 
 
-suite.only('Event', () =>
+suite('Event', () =>
 {
 	test('name', () => 
 	{
