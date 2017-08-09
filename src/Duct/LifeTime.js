@@ -6,12 +6,14 @@ namespace('Duct', function (root)
 	
 	var Event			= root.Duct.Event; 
 	var Listener		= root.Duct.Listener;
-	var DeadListener	= root.Duct.DeadListener;
+	var DeadListener	= root.Duct.LT.DeadListener;
 	var LifeBind		= root.Duct.LT.LifeBind;
 	
 	
 	function LifeTime(name)
 	{
+		LifeBind.call(this);
+		
 		this._name		= name || 'Lifetime';
 		this._onKill 	= this._createEvent();
 		
@@ -62,7 +64,7 @@ namespace('Duct', function (root)
 	LifeTime.prototype.clear = function ()
 	{
 		this._invokeOnKill();
-		LifeBind.clear.call(this);
+		LifeBind.prototype.clear.call(this);
 	};
 	
 	LifeTime.prototype.kill = function ()
@@ -71,7 +73,7 @@ namespace('Duct', function (root)
 		
 		this._invokeOnKill();
 		
-		LifeBind.kill.call(this);
+		LifeBind.prototype.kill.call(this);
 	};
 	
 	
