@@ -1,4 +1,4 @@
-namespace('Duct', function ()
+namespace('Duct.Handlers', function ()
 {
 	/**
 	 * @template T
