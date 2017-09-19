@@ -4,9 +4,9 @@ const Plankton	= root.Plankton;
 
 const assert	= require('chai').assert;
 
-const func			= Plankton.func;
 const Event			= Duct.Event;
 const LifeTime		= Duct.LifeTime;
+const Listener		= Duct.Listener;
 
 
 suite('Event', () =>
@@ -204,6 +204,41 @@ suite('Event', () =>
 			e.trigger();
 			
 			assert.equal(isCalled, false);
+		});
+	});
+	
+	suite('listener', () =>
+	{
+		test('Listner returned', () =>
+		{
+			var e = new Event();
+			
+			assert.instanceOf(e.listener(), Listener);
+		});
+		
+		test('Callback passed, callback add to event', () =>
+		{
+			var e = new Event();
+			var isCalled = false;
+			
+			e.listener(() => { isCalled = true; });
+			e.trigger();
+			
+			assert.isTrue(isCalled);
+		});
+		
+		test('Lifetime object and callback passed, callback add to event with lifetime', () =>
+		{
+			var e = new Event();
+			var calledCount = 0;
+			var lifeTime = new LifeTime();
+			
+			e.listener(lifeTime, () => { calledCount++; });
+			e.trigger();
+			lifeTime.kill();
+			e.trigger();
+			
+			assert.equal(calledCount, 1);
 		});
 	});
 	

@@ -1,6 +1,7 @@
 namespace('Duct', function (root)
 {
 	var Trigger			= root.Duct.Trigger;
+	var Listener		= root.Duct.Listener;
 	var EventDebug		= root.Duct.Debug.EventDebug;
 	var LifeBindFactory	= root.Duct.LT.LifeBindFactory;
 	
@@ -32,6 +33,7 @@ namespace('Duct', function (root)
 		this._name		= name || '';
 		this._debug		= debug || Event.DEFAULT_DEBUG;
 		this._trigger	= this._defaultTrigger;
+		this._listener	= new Listener(this);
 		
 		this._errorHandler = function(err)
 		{
@@ -206,6 +208,20 @@ namespace('Duct', function (root)
 	Event.prototype.destroy = function ()
 	{
 		this._callbacks = null;
+	};
+	
+	/**
+	 * @template T
+	 * @param {T|*=} item
+	 * @param {T=undefined} callback
+	 * @return {Listener}
+	 */
+	Event.prototype.listener = function(item, callback)
+	{
+		if (is(item))
+			this._listener.add(item, callback);
+		
+		return this._listener;
 	};
 	
 	
