@@ -50,12 +50,10 @@ namespace('Duct', function (root)
 	 */
 	Event.prototype._defaultTrigger = function (callbacks, callbackArgs)
 	{
-		foreach(callbacks, 
-			function(callback)
-			{
-				this._triggerCallback(callback, callbackArgs);
-			}, 
-			this);
+		foreach(callbacks, this, function(callback)
+		{
+			this._triggerCallback(callback, callbackArgs);
+		});
 	};
 	
 	/**

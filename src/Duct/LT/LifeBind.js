@@ -1,9 +1,10 @@
 namespace('Duct.LT', function (root)
 {
+	var classify	= root.Classy.classify;
+	
 	var is			= root.Plankton.is;
 	var func		= root.Plankton.func;
 	var foreach		= root.Plankton.foreach;
-	var classify	= root.Classy.classify;
 
 
 	/**
@@ -30,11 +31,10 @@ namespace('Duct.LT', function (root)
 	
 	LifeBind.prototype._invokeUnbinds = function (original, boundData)
 	{
-		foreach(boundData, function (item) 
-			{
-				this._invokeUnbind(item[0], original, item[1]);
-			},
-			this);
+		foreach(boundData, this, function (item) 
+		{
+			this._invokeUnbind(item[0], original, item[1]);
+		});
 	};
 	
 	LifeBind.prototype._createCallback = function (callback)

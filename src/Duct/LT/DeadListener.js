@@ -1,8 +1,9 @@
 namespace('Duct.LT', function (root)
 {
-	var func = root.Plankton.func;
-	var foreach = root.Plankton.foreach;
-	var classify = root.Classy.classify;
+	var classify	= root.Classy.classify;
+	
+	var func		= root.Plankton.func;
+	var foreach		= root.Plankton.foreach;
 	
 	
 	/**
