@@ -63,6 +63,33 @@ suite('Event', () =>
 		assert.equal(isCalled, false);
 	});
 	
+	test('clear called after destroy', () =>
+	{
+		var isCalled = false;
+		var e = new Event();
+		
+		e.destroy();
+		e.clear();
+	});
+	
+	test('Error handler', () => 
+	{
+		var passedErr = false;
+		var thrownErr = new Error();
+		var e = new Event();
+		
+		e.setErrorHandler(function (err) { passedErr = err; });
+		
+		e.add(function () {
+			throw thrownErr;
+		});
+		
+		e.trigger();
+		
+		assert.strictEqual(passedErr, thrownErr);
+	});
+	
+	
 	
 	suite('trigger', () => 
 	{
