@@ -79,6 +79,11 @@ namespace('Duct', function (window)
 		return this._lt.isDead();
 	};
 	
+	LifeTimeNode.prototype.subject = function ()
+	{
+		return this._subject;
+	};
+	
 	LifeTimeNode.prototype.destroy = function ()
 	{
 		if (this.isDestroyed())
@@ -97,9 +102,22 @@ namespace('Duct', function (window)
 		root.destroy();
 	};
 	
-	LifeTimeNode.prototype.subject = function ()
+	
+	LifeTimeNode._detach = function (parent, child)
 	{
-		return this._subject;
+		if (!is(parent))
+			return;
+		
+		parent._onChildDetached(parent, child);
+		child._onDetached(parent, child);
+	};
+	
+	LifeTimeNode._attach = function (parent, child)
+	{
+		if (!is(parent) || LifeTimeNode.isAnyDestroyed(parent, child))
+			return;
+		
+		parent._onChildAttached(parent, child);
 	};
 	
 	/**
@@ -107,51 +125,22 @@ namespace('Duct', function (window)
 	 */
 	LifeTimeNode.prototype.attachChild = function (child)
 	{
-		if (LifeTimeNode.isAnyDestroyed(child, this)) return;
-		
-		else if (is(child._parent))
-		{
-			if (child._parent === this)
-				return;
-			
-			child.detach();
-		}
-		
-		this._onChildAttached.trigger(child, this);
+		LifeTimeNode._attach(this, child);
 	};
 	
 	LifeTimeNode.prototype.detachChild = function (child)
 	{
-		if (this.isDestroyed()) return;
-		
-		var index = this._children.indexOf(child);
-		
-		if (index === -1)
-			return;
-		
-		child._parent = null;
-		child._onDetached.trigger(true);
-		this._onChildDetached.trigger(child, this);
+		LifeTimeNode._detach(this, child);
 	};
 	
 	LifeTimeNode.prototype.attach = function (parent)
 	{
-		if (LifeTimeNode.isAnyDestroyed(child, this)) return;
-		
-		if (is(this._parent))
-			this._parent.detachChild(this);
-		
-		parent.attachChild(this);
+		LifeTimeNode._attach(parent, this);
 	};
 	
 	LifeTimeNode.prototype.detach = function ()
 	{
-		if (this.isDestroyed()) return;
-		
-		if (!is(this._parent))
-			return;
-		
-		this._parent.detachChild(this);
+		LifeTimeNode._detach(this._parent, this);
 	};
 	
 	LifeTimeNode.prototype.createChild = function (subject)
