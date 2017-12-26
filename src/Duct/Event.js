@@ -223,6 +223,19 @@ namespace('Duct', function (root)
 	};
 	
 	
+	/**
+	 * @param eventName
+	 * @return {function(*, *=undefined): Listener}
+	 */
+	Event.createListener = function (eventName)
+	{
+		return function (item, callback)
+		{
+			return this[eventName].listener(item, callback);
+		};
+	};
+	
+	
 	Event.DEFAULT_DEBUG = new EventDebug();
 	
 	

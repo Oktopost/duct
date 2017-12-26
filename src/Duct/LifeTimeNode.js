@@ -2,7 +2,9 @@ namespace('Duct', function (window)
 {
 	var is			= window.Plankton.is;
 	var foreach		= window.Plankton.foreach;
+	var classify	= window.Classy.classify;
 	
+	var Event			= window.Duct.Event;
 	var LifeTime		= window.Duct.LifeTime;
 	var LifeBindFactory	= window.Duct.LT.LifeBindFactory;
 	
@@ -15,11 +17,20 @@ namespace('Duct', function (window)
 	 */
 	function LifeTimeNode(subject)
 	{
-		this._lt		= new LifeTime();
+		this._lt	= new LifeTime();
 		
 		this._parent	= null;
 		this._children	= [];
 		this._subject	= subject;
+		
+		this._onDestroy			= new Event();
+		this._onChildDestroy	= new Event();
+		this._onChildAttached	= new Event();
+		this._onChildDetached	= new Event();
+		this._onAttached		= new Event();
+		this._onDetached		= new Event();
+		
+		classify(this);
 	}
 	
 	
@@ -74,8 +85,8 @@ namespace('Duct', function (window)
 			return;
 		
 		this._lt.kill();
-		this._children = [];
-		this.detach()
+		this.detach();
+		this._onDestroy.trigger(this);
 	};
 	
 	LifeTimeNode.prototype.destroyTree = function ()
@@ -98,22 +109,29 @@ namespace('Duct', function (window)
 	{
 		if (LifeTimeNode.isAnyDestroyed(child, this)) return;
 		
-		if (child.hasParent())
+		else if (is(child._parent))
+		{
+			if (child._parent === this)
+				return;
+			
 			child.detach();
+		}
 		
-		// TODO: Attach to here.
+		this._onChildAttached.trigger(child, this);
 	};
 	
 	LifeTimeNode.prototype.detachChild = function (child)
 	{
-		if (LifeTimeNode.isAnyDestroyed(child, this)) return;
+		if (this.isDestroyed()) return;
 		
 		var index = this._children.indexOf(child);
 		
 		if (index === -1)
 			return;
 		
-		// TODO: Detach
+		child._parent = null;
+		child._onDetached.trigger(true);
+		this._onChildDetached.trigger(child, this);
 	};
 	
 	LifeTimeNode.prototype.attach = function (parent)
@@ -128,24 +146,34 @@ namespace('Duct', function (window)
 	
 	LifeTimeNode.prototype.detach = function ()
 	{
-		if (LifeTimeNode.isAnyDestroyed(child, this)) return;
+		if (this.isDestroyed()) return;
 		
-		if (is(this._parent))
-			this._parent.detachChild(this);
+		if (!is(this._parent))
+			return;
+		
+		this._parent.detachChild(this);
 	};
 	
-	/**
-	 * 
-	 * @return 
-	 */
 	LifeTimeNode.prototype.createChild = function (subject)
 	{
 		var child = new LifeTimeNode(subject);
 		
-		if (this.isDestroyed()) return child;
+		if (this.isDestroyed())
+		{
+			child.destroy();
+			return child;
+		}
 		
 		this.attachChild(child);
 	};
+	
+	
+	LifeTimeNode.prototype.onDestroy = Event.createListener('_onDestroy');
+	LifeTimeNode.prototype.onAttached = Event.createListener('_onAttached');
+	LifeTimeNode.prototype.onDetached = Event.createListener('_onDetached');
+	LifeTimeNode.prototype.onChildDestroy = Event.createListener('_onChildAttached');
+	LifeTimeNode.prototype.onChildAttached = Event.createListener('_onChildAttached');
+	LifeTimeNode.prototype.onChildDetached = Event.createListener('_onChildDetached');
 	
 	
 	LifeTimeNode.isAnyDestroyed = function ()
