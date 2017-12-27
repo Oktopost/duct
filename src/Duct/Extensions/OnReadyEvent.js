@@ -1,46 +1,64 @@
 namespace('Duct.Extensions', function (root)
 {
-	var Event		= root.Duct.Event;
+	var Event			= root.Duct.Event;
+	var LifeBindFactory	= root.Duct.LT.LifeBindFactory;
+	
 	var classify	= root.Classy.classify;
+	var inherit		= root.Classy.inherit;
 	var is			= root.Plankton.is;
 	var func		= root.Plankton.func;
 	
 	
-	var OnReadyEvent = function (eventName)
+	var OnReadyEvent = function (name, debug)
 	{
+		Event.call(this, name, debug);
+		
 		classify(this);
 		
-		this._result	= false;
-		this._event		= new Event(eventName);
+		this._isTriggered = false;
 	};
 	
+	inherit(OnReadyEvent, Event);
 	
-	OnReadyEvent.prototype.getEvent = function ()
-	{
-		return this._event;
-	};
 	
 	OnReadyEvent.prototype.isTriggered = function ()
 	{
-		return this._result;
+		return this._isTriggered;
 	};
 	
-	OnReadyEvent.prototype.add = function (lt, callback)
+	OnReadyEvent.prototype.add = function (item, callback)
 	{
-		if (is.true(this._result))
+		if (this.isDestroyed()) return this;
+					
+		if (is.function(callback))
 		{
-			(func.async(lt.bindToLife(callback)))();
-			return;
+			var lt = LifeBindFactory.instance().get(item);
+			callback = lt.bindToLife(callback, this._onUnbindLT);
 		}
 		
-		this._event.add(lt, callback);
+		if (is.true(this._isTriggered))
+		{
+			(func.async(callback))();
+		}
+		else
+		{
+			this._callbacks.push(callback);
+		}
+
+		return this;
 	};
 	
 	OnReadyEvent.prototype.trigger = function ()
 	{
-		this._result = true;
-		this._event.trigger();
-		this._event = null;
+		if (this.isDestroyed()) return this;
+		
+		var callbackArgs = [].slice.apply(arguments);
+		
+		this._isTriggered = true;
+		this._debug.onTrigger(this, callbackArgs);
+		this._trigger(this._callbacks.concat(), callbackArgs);
+		
+		this.clear();
 	};
 	
 	

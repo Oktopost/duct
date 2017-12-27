@@ -16,8 +16,8 @@ suite('OnReadyEvent', () =>
 		var eventName = Math.random().toString(36).substr(2, 5);
 		var onReady = new OnReadyEvent(eventName);
 		
-		expect(onReady.getEvent()).to.be.instanceOf(Event);
-		assert.equal(onReady.getEvent().name(), eventName);
+		expect(onReady).to.be.instanceOf(Event);
+		assert.equal(onReady.name(), eventName);
 	});
 	
 	suite('trigger', () =>
@@ -34,6 +34,19 @@ suite('OnReadyEvent', () =>
 			e.trigger();
 			assert.equal(e.isTriggered(), true);
 		});
+		
+		test('triggerDestroyed', () => 
+		{
+			var result = false;
+			
+			
+			var e = new OnReadyEvent('e');
+			e.add(new LifeTime(), () => { result = true; });
+			e.destroy();
+			
+			expect(e.trigger()).to.be.instanceOf(Event);
+			assert.equal(false, result);
+		});
 	});
 
 	suite('add', () =>
@@ -43,16 +56,36 @@ suite('OnReadyEvent', () =>
 			var e = new OnReadyEvent('e');
 			e.add(new LifeTime(), () => {});
 			
-			assert.equal(e.getEvent().count(), 1);
+			assert.equal(1, e.count());
 		});
 		
 		test('runImmediately', () =>
 		{
+			var isTriggered = false;
 			var e = new OnReadyEvent('e');
 			e.trigger();
-			e.add(new LifeTime(), () => {});
-
-			assert.equal(e.getEvent(), null);
+						
+			var promise = new Promise((resolve, reject) => {
+				e.add(new LifeTime(), () => { isTriggered = true; });
+				resolve();
+			});
+			
+			return promise.then(function ()
+			{
+				assert.equal(0, e.count());
+				assert.equal(true, e.isTriggered());
+				assert.equal(true, isTriggered);
+			});
+		});
+		
+		test('addToDestroyed', () => 
+		{
+			var isTriggered = false;
+			var e = new OnReadyEvent('e');
+			e.destroy();
+			
+			expect(e.add(new LifeTime(), () => { isTriggered = true; })).to.be.instanceOf(Event);
+			assert.equal(false, isTriggered);
 		});
 	});
 });
