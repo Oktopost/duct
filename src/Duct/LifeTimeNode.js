@@ -1,12 +1,12 @@
-namespace('Duct', function (window)
+namespace('Duct', function (root)
 {
-	var is			= window.Plankton.is;
-	var foreach		= window.Plankton.foreach;
-	var classify	= window.Classy.classify;
+	var is			= root.Plankton.is;
+	var foreach		= root.Plankton.foreach;
+	var classify	= root.Classy.classify;
 	
-	var Event			= window.Duct.Event;
-	var LifeTime		= window.Duct.LifeTime;
-	var LifeBindFactory	= window.Duct.LT.LifeBindFactory;
+	var Event			= root.Duct.Event;
+	var LifeTime		= root.Duct.LifeTime;
+	var LifeBindFactory	= root.Duct.LT.LifeBindFactory;
 	
 	
 	/**
@@ -33,6 +33,98 @@ namespace('Duct', function (window)
 		classify(this);
 	}
 	
+
+	LifeTimeNode._detach = function (parent, child)
+	{
+		if (!is(parent) || !is(child))
+			return;
+		
+		if (!is(parent._removeChild(child)))
+			return;
+		
+		child._parent = null;
+
+		parent._onChildDetached.trigger(parent, child);
+		child._onDetached.trigger(parent, child);
+	};
+
+	LifeTimeNode._attach = function (parent, child)
+	{
+		if (!is(parent) || !is(child) || LifeTimeNode.isAnyDestroyed(parent, child))
+			return;
+		
+		if (!is(parent._addChild(child)))
+			return;
+		
+		child._parent = parent;
+
+		parent._onChildAttached.trigger(parent, child);
+		child._onAttached.trigger(parent, child);
+	};
+	
+	LifeTimeNode._destroy = function (node)
+	{
+		if (node.isDestroyed())
+			return;
+		
+		if (is(node.hasChildren()))
+		{
+			var children = node.children().slice();
+			foreach(children, function (child)
+			{
+				child.destroy();
+				node._onChildDestroy.trigger(node, child);
+			});
+		}
+		
+		node._lt.kill();
+		node.detach();
+		
+		node._onDestroy.trigger(this);
+	};
+	
+	LifeTimeNode.isAnyDestroyed = function ()
+	{
+		var res = false;
+		
+		foreach(arguments, function (node) 
+		{
+			if (node.isDestroyed())
+			{
+				res = true;
+				return false;
+			}
+		});
+		
+		return res;
+	};
+
+	
+	LifeTimeNode.prototype._removeChild = function (child)
+	{
+		var index = this._children.indexOf(child);
+		
+		if (index > -1)
+		{
+			this._children.splice(index, 1);
+			return true;
+		}
+		
+		return false;
+	};
+	
+	LifeTimeNode.prototype._addChild = function (child)
+	{
+		var index = this._children.indexOf(child);
+
+		if (index === -1)
+		{
+			this._children.push(child);
+			return true;
+		}
+		
+		return false;
+	};
 	
 	/**
 	 * @return {LifeTimeNode|null}
@@ -86,12 +178,7 @@ namespace('Duct', function (window)
 	
 	LifeTimeNode.prototype.destroy = function ()
 	{
-		if (this.isDestroyed())
-			return;
-		
-		this._lt.kill();
-		this.detach();
-		this._onDestroy.trigger(this);
+		LifeTimeNode._destroy(this);
 	};
 	
 	LifeTimeNode.prototype.destroyTree = function ()
@@ -100,24 +187,6 @@ namespace('Duct', function (window)
 		
 		root = root || this;
 		root.destroy();
-	};
-	
-	
-	LifeTimeNode._detach = function (parent, child)
-	{
-		if (!is(parent))
-			return;
-		
-		parent._onChildDetached(parent, child);
-		child._onDetached(parent, child);
-	};
-	
-	LifeTimeNode._attach = function (parent, child)
-	{
-		if (!is(parent) || LifeTimeNode.isAnyDestroyed(parent, child))
-			return;
-		
-		parent._onChildAttached(parent, child);
 	};
 	
 	/**
@@ -154,32 +223,17 @@ namespace('Duct', function (window)
 		}
 		
 		this.attachChild(child);
+		
+		return child;
 	};
 	
 	
 	LifeTimeNode.prototype.onDestroy = Event.createListener('_onDestroy');
 	LifeTimeNode.prototype.onAttached = Event.createListener('_onAttached');
 	LifeTimeNode.prototype.onDetached = Event.createListener('_onDetached');
-	LifeTimeNode.prototype.onChildDestroy = Event.createListener('_onChildAttached');
+	LifeTimeNode.prototype.onChildDestroy = Event.createListener('_onChildDestroy');
 	LifeTimeNode.prototype.onChildAttached = Event.createListener('_onChildAttached');
 	LifeTimeNode.prototype.onChildDetached = Event.createListener('_onChildDetached');
-	
-	
-	LifeTimeNode.isAnyDestroyed = function ()
-	{
-		var res = false;
-		
-		foreach(arguments, function (node) 
-		{
-			if (node.isDestroyed())
-			{
-				res = true;
-				return false;
-			}
-		});
-		
-		return res;
-	};
 	
 	
 	LifeBindFactory.instance().addBuilder(function (item)
