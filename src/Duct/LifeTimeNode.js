@@ -76,13 +76,7 @@ namespace('Duct', function (root)
 			});
 		}
 		
-		if (!node._lt.isDead())
-		{
-			node._lt.kill();
-		}
-		
 		node.detach();
-		
 		node._onDestroy.trigger(this);
 	};
 	
