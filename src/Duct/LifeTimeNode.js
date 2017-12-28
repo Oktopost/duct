@@ -31,6 +31,8 @@ namespace('Duct', function (root)
 		this._onDetached		= new Event();
 		
 		classify(this);
+
+		this._lt.onKill(this._destroy);
 	}
 	
 
@@ -63,10 +65,7 @@ namespace('Duct', function (root)
 	};
 	
 	LifeTimeNode._destroy = function (node)
-	{
-		if (node.isDestroyed())
-			return;
-		
+	{		
 		if (is(node.hasChildren()))
 		{
 			var children = node.children().slice();
@@ -77,7 +76,11 @@ namespace('Duct', function (root)
 			});
 		}
 		
-		node._lt.kill();
+		if (!node._lt.isDead())
+		{
+			node._lt.kill();
+		}
+		
 		node.detach();
 		
 		node._onDestroy.trigger(this);
@@ -125,6 +128,12 @@ namespace('Duct', function (root)
 		
 		return false;
 	};
+	
+	LifeTimeNode.prototype._destroy = function ()
+	{
+		LifeTimeNode._destroy(this);	
+	};
+	
 	
 	/**
 	 * @return {LifeTimeNode|null}
@@ -178,7 +187,10 @@ namespace('Duct', function (root)
 	
 	LifeTimeNode.prototype.destroy = function ()
 	{
-		LifeTimeNode._destroy(this);
+		if (this.isDestroyed())
+			return;
+
+		this._lt.kill();
 	};
 	
 	LifeTimeNode.prototype.destroyTree = function ()
