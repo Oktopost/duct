@@ -11,26 +11,40 @@ const LifeBind			= Duct.LT.LifeBind;
 const LifeBindFactory	= Duct.LT.LifeBindFactory;
 
 
+var originalTest = test;
+
+
 suite('LifeBindFactory', () =>
 {
-	function reset()
+	var test = function (message, callback)
 	{
-		LifeBindFactory.__instance__ = null;
-	}
+		originalTest(message, () => {
+			var lastInstance = LifeBindFactory.__instance__;
+			LifeBindFactory.__instance__ = null;
+			
+			try 
+			{
+				callback();
+			}
+			finally 
+			{
+				LifeBindFactory.__instance__ = lastInstance;
+			}
+		});
+	};
+	
+	test.only = originalTest.only;
 	
 	
 	suite('get', () => 
 	{
 		test('No builder found, exception thrown', () => 
 		{
-			reset();
 			assert.throws(() => { LifeBindFactory.instance().get('abc'); });
 		});
 		
 		test('Object is a LifeBind object, same object returned', () => 
 		{
-			reset();
-			
 			var target = new LifeBind();
 			
 			assert.deepEqual(LifeBindFactory.instance().get(target), target);
@@ -38,8 +52,6 @@ suite('LifeBindFactory', () =>
 		
 		test('Object is isntance of LifeBind , same object returned', () => 
 		{
-			reset();
-			
 			function tmp() {}
 			
 			inherit(tmp, LifeBind);
@@ -51,8 +63,6 @@ suite('LifeBindFactory', () =>
 		
 		test('Builder for object found, builders value returned', () => 
 		{
-			reset();
-			
 			var result = new LifeBind();
 			
 			LifeBindFactory.instance().addBuilder(() => { return result; });
@@ -62,8 +72,6 @@ suite('LifeBindFactory', () =>
 		
 		test('Value of the first found builder is returned', () => 
 		{
-			reset();
-			
 			var result1 = new LifeBind();
 			var result2 = new LifeBind();
 			
@@ -75,8 +83,6 @@ suite('LifeBindFactory', () =>
 		
 		test('Value passed to builder', () => 
 		{
-			reset();
-			
 			var calledWith = null;
 			
 			LifeBindFactory.instance().addBuilder((a) => { calledWith = a; return new LifeBind(); });
@@ -90,8 +96,6 @@ suite('LifeBindFactory', () =>
 	{
 		test('Add single builder', () => 
 		{
-			reset();
-			
 			LifeBindFactory.instance().addBuilder(() => { return new LifeBind(); });
 			
 			assert.instanceOf(LifeBindFactory.instance().get('a'), LifeBind);
@@ -100,8 +104,6 @@ suite('LifeBindFactory', () =>
 		
 		test('Add array of builders', () => 
 		{
-			reset();
-			
 			var isCalled1 = false;
 			var isCalled2 = false;
 			

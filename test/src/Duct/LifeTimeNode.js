@@ -2,8 +2,10 @@ const root 		= require('../../index');
 const assert	= require('chai').assert;
 
 const Duct				= root.Duct;
+
 const LifeTime			= Duct.LifeTime;
 const LifeTimeNode		= Duct.LifeTimeNode;
+const LifeBindFactory	= Duct.LT.LifeBindFactory;
 
 
 
@@ -730,6 +732,15 @@ suite('LifeTimeNode', () =>
 			assert.isNull(child.parent());
 			assert.equal(0, parentNode.children().length);
 			assert.isFalse(child.isAlive());
+		});
+	});
+	
+	suite('LifeTimeFactory Check', () => 
+	{
+		test('LifeTimeNode passed, life time returned', () => 
+		{
+			var node = new LifeTimeNode();
+			assert.strictEqual(LifeBindFactory.instance().get(node), node.LT())
 		});
 	});
 });
