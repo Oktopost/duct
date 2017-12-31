@@ -35,6 +35,10 @@ namespace('Duct.Extensions', function (root)
 			var lt = LifeBindFactory.instance().get(item);
 			callback = lt.bindToLife(callback, this._onUnbindLT);
 		}
+		else
+		{
+			callback = item;
+		}
 		
 		if (is.true(this._isTriggered))
 		{
