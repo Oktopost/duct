@@ -9,7 +9,7 @@ const classify	= root.Classy.classify;
 const assert	= require('chai').assert;
 
 
-suite.only('Binder', () =>
+suite('Binder', () =>
 {
 	suite('isBinded', () => 
 	{

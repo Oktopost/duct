@@ -2,22 +2,16 @@ namespace('Duct.LT', function (root)
 {
 	var is			= root.Plankton.is;
 	var foreach		= root.Plankton.foreach;
-	var LifeTime	= root.Duct.LifeTime;
+	var LifeBind	= root.Duct.LT.LifeBind;
 
-
-	/**
-	 * @class {Duct.LT.LifeBind}
-	 * @alias {LifeBind}
-	 * 
-	 * @constructor
-	 */
+	
 	var Binder = {
 		
 		ATTACHMENT_KEY: '__LT__',
 		
 		/**
 		 * @param {object} target
-		 * @param {LifeTime} lt
+		 * @param {LifeBind} lt
 		 * @param {RegExp=} filter
 		 */
 		attach: function (target, lt, filter)
@@ -42,12 +36,12 @@ namespace('Duct.LT', function (root)
 			if (!is.function(callback) || !is(callback[Binder.ATTACHMENT_KEY]))
 				return false;
 			
-			return (callback[Binder.ATTACHMENT_KEY] instanceof LifeTime);
+			return (callback[Binder.ATTACHMENT_KEY] instanceof LifeBind);
 		},
 		
 		/**
 		 * @param {*} callback
-		 * @return {LifeTime|null}
+		 * @return {LifeBind|null}
 		 */
 		get: function (callback)
 		{

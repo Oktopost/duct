@@ -7,6 +7,7 @@ const assert	= require('chai').assert;
 const Event			= Duct.Event;
 const LifeTime		= Duct.LifeTime;
 const Listener		= Duct.Listener;
+const Binder		= Duct.LT.Binder;
 
 
 suite('Event', () =>
@@ -182,6 +183,25 @@ suite('Event', () =>
 			e.trigger();
 			
 			assert.equal(isCalled, true);
+		});
+		
+		test('Add callback with a LifeTime object field, binded callback added', () => 
+		{
+			var calls = 0;
+			var func = function () { calls++; };
+			var lt = new LifeTime();
+			
+			func[Binder.ATTACHMENT_KEY] = lt;
+			
+			var e = new Event();
+			e.add(func);
+			
+			e.trigger();
+			assert.equal(calls, 1);
+			
+			lt.kill();
+			e.trigger();
+			assert.equal(calls, 1);
 		});
 	});
 	

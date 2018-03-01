@@ -3,6 +3,7 @@ namespace('Duct', function (root)
 	var Trigger			= root.Duct.Trigger;
 	var Listener		= root.Duct.Listener;
 	var EventDebug		= root.Duct.Debug.EventDebug;
+	var Binder			= root.Duct.LT.Binder;
 	var LifeBindFactory	= root.Duct.LT.LifeBindFactory;
 	
 	var is			= root.Plankton.is;
@@ -120,7 +121,7 @@ namespace('Duct', function (root)
 		}
 		else 
 		{
-			this._callbacks.push(item);
+			this._callbacks.push(Binder.getBinded(item));
 		}
 		
 		return this;

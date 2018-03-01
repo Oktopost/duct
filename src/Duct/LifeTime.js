@@ -2,7 +2,6 @@ namespace('Duct', function (root)
 {
 	var inherit		= root.Classy.inherit;
 	var classify	= root.Classy.classify;
-	var func		= root.Plankton.func;
 	
 	var Event			= root.Duct.Event; 
 	var Listener		= root.Duct.Listener;
