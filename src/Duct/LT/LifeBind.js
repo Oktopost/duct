@@ -5,8 +5,8 @@ namespace('Duct.LT', function (root)
 	var is			= root.Plankton.is;
 	var func		= root.Plankton.func;
 	var foreach		= root.Plankton.foreach;
-
-
+	
+	
 	/**
 	 * @class {Duct.LT.LifeBind}
 	 * @alias {LifeBind}
@@ -77,8 +77,8 @@ namespace('Duct.LT', function (root)
 			this._boundData[index].push([ onDestroy, bound ]);
 		}
 	};
-
-
+	
+	
 	/**
 	 * @param {function} callback
 	 * @param {function(Function, Function)=} onDestroy
